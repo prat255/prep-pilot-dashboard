@@ -1,15 +1,61 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // This is a placeholder - we'll implement actual authentication later
-    console.log('Login form submitted');
+    setIsLoading(true);
+    
+    // Simple validation
+    if (!email || !password) {
+      toast({
+        title: "Error",
+        description: "Please enter both email and password",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    // In a real app, this would be an API call
+    // For now, we'll simulate authentication with localStorage
+    setTimeout(() => {
+      const users = JSON.parse(localStorage.getItem('jeeTrackerUsers') || '[]');
+      const user = users.find((u: any) => u.email === email && u.password === password);
+      
+      if (user) {
+        // Set auth state
+        localStorage.setItem('jeeTrackerCurrentUser', JSON.stringify({
+          email: user.email,
+          name: user.name,
+          isAuthenticated: true
+        }));
+        
+        toast({
+          title: "Success",
+          description: "Logged in successfully!",
+        });
+        
+        navigate('/dashboard');
+      } else {
+        toast({
+          title: "Error",
+          description: "Invalid email or password",
+          variant: "destructive"
+        });
+      }
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
@@ -28,7 +74,14 @@ const Login = () => {
               <label htmlFor="email" className="text-sm font-medium">
                 Email address
               </label>
-              <Input id="email" type="email" placeholder="you@example.com" required />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="you@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required 
+              />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -39,10 +92,21 @@ const Login = () => {
                   Forgot password?
                 </Link>
               </div>
-              <Input id="password" type="password" placeholder="••••••••" required />
+              <Input 
+                id="password" 
+                type="password" 
+                placeholder="••••••••" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required 
+              />
             </div>
-            <Button type="submit" className="w-full bg-gradient-to-r from-jee-primary to-jee-secondary hover:opacity-90">
-              Sign In
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-jee-primary to-jee-secondary hover:opacity-90"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
           <div className="relative my-6">

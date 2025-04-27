@@ -1,16 +1,114 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/hooks/use-toast';
 
 const Signup = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    termsAccepted: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, termsAccepted: checked }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // This is a placeholder - we'll implement actual authentication later
-    console.log('Signup form submitted');
+    setIsLoading(true);
+    
+    // Simple validation
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    if (!formData.termsAccepted) {
+      toast({
+        title: "Error",
+        description: "Please accept the terms of service",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    // Check if password is at least 6 characters
+    if (formData.password.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    // In a real app, this would be an API call
+    // For now, we'll use localStorage to simulate user registration
+    setTimeout(() => {
+      // Get existing users or create empty array
+      const existingUsers = JSON.parse(localStorage.getItem('jeeTrackerUsers') || '[]');
+      
+      // Check if email already exists
+      if (existingUsers.some((user: any) => user.email === formData.email)) {
+        toast({
+          title: "Error",
+          description: "Email already in use",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      // Create new user
+      const newUser = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        name: `${formData.firstName} ${formData.lastName}`,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Add user to array and save back to localStorage
+      existingUsers.push(newUser);
+      localStorage.setItem('jeeTrackerUsers', JSON.stringify(existingUsers));
+      
+      // Set current user
+      localStorage.setItem('jeeTrackerCurrentUser', JSON.stringify({
+        email: newUser.email,
+        name: newUser.name,
+        isAuthenticated: true
+      }));
+      
+      toast({
+        title: "Success",
+        description: "Account created successfully!"
+      });
+      
+      navigate('/dashboard');
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
@@ -30,29 +128,59 @@ const Signup = () => {
                 <label htmlFor="firstName" className="text-sm font-medium">
                   First name
                 </label>
-                <Input id="firstName" placeholder="John" required />
+                <Input 
+                  id="firstName" 
+                  placeholder="John" 
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required 
+                />
               </div>
               <div className="space-y-2">
                 <label htmlFor="lastName" className="text-sm font-medium">
                   Last name
                 </label>
-                <Input id="lastName" placeholder="Doe" required />
+                <Input 
+                  id="lastName" 
+                  placeholder="Doe" 
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required 
+                />
               </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email address
               </label>
-              <Input id="email" type="email" placeholder="you@example.com" required />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="you@example.com" 
+                value={formData.email}
+                onChange={handleChange}
+                required 
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
                 Password
               </label>
-              <Input id="password" type="password" placeholder="••••••••" required />
+              <Input 
+                id="password" 
+                type="password" 
+                placeholder="••••••••" 
+                value={formData.password}
+                onChange={handleChange}
+                required 
+              />
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox id="terms" />
+              <Checkbox 
+                id="terms" 
+                checked={formData.termsAccepted} 
+                onCheckedChange={handleCheckboxChange} 
+              />
               <label
                 htmlFor="terms"
                 className="text-sm text-gray-600 dark:text-gray-400"
@@ -67,8 +195,12 @@ const Signup = () => {
                 </Link>
               </label>
             </div>
-            <Button type="submit" className="w-full bg-gradient-to-r from-jee-primary to-jee-secondary hover:opacity-90">
-              Create Account
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-jee-primary to-jee-secondary hover:opacity-90"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
           <div className="relative my-6">
