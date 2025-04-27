@@ -12,7 +12,7 @@ const Footer = () => {
               <div className="h-8 w-8 rounded-full bg-gradient-to-r from-jee-primary to-jee-secondary flex items-center justify-center text-white font-bold">
                 J+
               </div>
-              <span className="text-xl font-bold jee-gradient-text">JEETracker+</span>
+              <span className="text-xl font-bold jee-gradient-text">JEEPilot</span>
             </Link>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
               Your all-in-one platform to track, analyze, and improve your JEE preparation journey.
@@ -74,7 +74,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>&copy; {new Date().getFullYear()} JEETracker+. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} JEEPilot. All rights reserved.</p>
         </div>
       </div>
     </footer>
