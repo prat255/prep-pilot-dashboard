@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import ThemeToggle from './ThemeToggle';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -50,6 +51,8 @@ const Navbar = () => {
         </div>
         
         <div className="hidden md:flex items-center gap-4">
+          <ThemeToggle />
+          
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -67,6 +70,11 @@ const Navbar = () => {
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   Settings
                 </DropdownMenuItem>
+                {user.role === 'admin' && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    Admin Panel
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -87,7 +95,8 @@ const Navbar = () => {
         </div>
         
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
@@ -141,6 +150,15 @@ const Navbar = () => {
                 >
                   Settings
                 </Link>
+                {user.role === 'admin' && (
+                  <Link 
+                    to="/admin" 
+                    className="text-gray-700 dark:text-gray-200 hover:text-jee-primary dark:hover:text-jee-accent transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 <Button 
                   variant="destructive" 
                   className="mt-2" 

@@ -1,18 +1,29 @@
 
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, loginWithGoogle, user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && user.isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
@@ -27,35 +38,31 @@ const Login = () => {
       return;
     }
     
-    // In a real app, this would be an API call
-    // For now, we'll simulate authentication with localStorage
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('jeeTrackerUsers') || '[]');
-      const user = users.find((u: any) => u.email === email && u.password === password);
-      
-      if (user) {
-        // Set auth state
-        localStorage.setItem('jeeTrackerCurrentUser', JSON.stringify({
-          email: user.email,
-          name: user.name,
-          isAuthenticated: true
-        }));
-        
-        toast({
-          title: "Success",
-          description: "Logged in successfully!",
-        });
-        
-        navigate('/dashboard');
-      } else {
-        toast({
-          title: "Error",
-          description: "Invalid email or password",
-          variant: "destructive"
-        });
-      }
+    const success = await login(email, password);
+    
+    if (!success) {
+      toast({
+        title: "Error",
+        description: "Invalid email or password",
+        variant: "destructive"
+      });
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to login with Google",
+        variant: "destructive"
+      });
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -119,7 +126,13 @@ const Login = () => {
               </span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" type="button">
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading}
+          >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
                 d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z"
@@ -138,7 +151,7 @@ const Login = () => {
                 fill="#34A853"
               />
             </svg>
-            Google
+            {googleLoading ? 'Signing in...' : 'Google'}
           </Button>
         </CardContent>
         <CardFooter className="text-center">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -11,18 +11,48 @@ import {
   Menu, 
   X,
   ChevronRight,
-  User
+  User,
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import ThemeToggle from '../ThemeToggle';
 
 const Sidebar = () => {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(() => {
+    // Check if sidebar state is stored in localStorage
+    const savedState = localStorage.getItem('jeeTracker-sidebar');
+    return savedState ? savedState === 'expanded' : window.innerWidth > 1024;
+  });
   const location = useLocation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Update localStorage when expanded state changes
+  useEffect(() => {
+    localStorage.setItem('jeeTracker-sidebar', expanded ? 'expanded' : 'collapsed');
+  }, [expanded]);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      // Auto collapse on smaller screens
+      if (window.innerWidth < 1024 && expanded) {
+        setExpanded(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Check on initial render
+    handleResize();
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [expanded]);
 
   const handleLogout = () => {
     logout();
@@ -57,6 +87,15 @@ const Sidebar = () => {
     }
   ];
 
+  // Add admin link if user is admin
+  if (user?.role === 'admin') {
+    menuItems.push({
+      icon: <Shield className="h-5 w-5" />,
+      title: 'Admin',
+      path: '/admin'
+    });
+  }
+
   // For mobile sidebar toggle
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -89,7 +128,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div className={cn(
-        "h-screen bg-sidebar fixed top-0 left-0 z-40 flex-shrink-0 transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800",
+        "h-screen bg-sidebar fixed top-0 left-0 z-40 flex-shrink-0 transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800",
         expanded ? "w-64" : "w-20",
         isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
@@ -110,9 +149,10 @@ const Sidebar = () => {
             <button
               onClick={() => setExpanded(!expanded)}
               className={cn(
-                "p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transform transition-transform",
+                "p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transform transition-transform",
                 expanded ? "" : "rotate-180"
               )}
+              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -121,7 +161,7 @@ const Sidebar = () => {
           {/* User information */}
           {user && (
             <div className={cn(
-              "px-4 py-3 border-t border-b border-gray-200 dark:border-gray-800",
+              "px-4 py-3 border-t border-b border-gray-200 dark:border-gray-700",
               expanded ? "text-left" : "text-center"
             )}>
               <div className="flex items-center gap-3">
@@ -149,9 +189,10 @@ const Sidebar = () => {
                       "flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors",
                       location.pathname === item.path
                         ? "bg-jee-primary/10 text-jee-primary font-medium"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-800",
+                        : "hover:bg-gray-100 dark:hover:bg-gray-700",
                       expanded ? "justify-start" : "justify-center"
                     )}
+                    onClick={() => window.innerWidth < 1024 && setIsMobileOpen(false)}
                   >
                     {item.icon}
                     {expanded && <span>{item.title}</span>}
@@ -161,8 +202,12 @@ const Sidebar = () => {
             </ul>
           </nav>
 
-          {/* Logout button */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+          {/* Theme toggle and logout */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className={expanded ? "flex justify-between mb-4" : "flex justify-center mb-4"}>
+              <ThemeToggle />
+              {expanded && <span className="text-sm">Theme</span>}
+            </div>
             <Button
               variant="ghost"
               className={cn(
