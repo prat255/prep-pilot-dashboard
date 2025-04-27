@@ -30,8 +30,11 @@ const StreakCalendar = () => {
 
   const currentStreak = 15; // Mock streak count
 
-  // Day cell render function
-  const renderDay = (day: Date) => {
+  // Day cell render function - adding a null check for the day parameter
+  const renderDay = (day: Date | undefined) => {
+    // Make sure day is defined before proceeding
+    if (!day) return null;
+    
     const dateString = day.toDateString();
     const intensity = studyDays[dateString];
     
@@ -76,16 +79,20 @@ const StreakCalendar = () => {
         <Calendar
           mode="single"
           selected={today}
-          className="rounded-md border shadow"
+          className="rounded-md border shadow pointer-events-auto"
           components={{
-            DayContent: ({ day }) => (
-              <div className="relative w-full h-full flex items-center justify-center">
-                {renderDay(day)}
-                <span className="z-10 text-sm relative">
-                  {day.getDate()}
-                </span>
-              </div>
-            )
+            DayContent: (props) => {
+              // Access the date from the props correctly based on the DayPicker component props
+              const date = props.date;
+              return (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {renderDay(date)}
+                  <span className="z-10 text-sm relative">
+                    {date ? date.getDate() : ''}
+                  </span>
+                </div>
+              );
+            }
           }}
         />
       </CardContent>
