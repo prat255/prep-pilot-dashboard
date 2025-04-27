@@ -17,7 +17,7 @@ To build and run the application locally:
 
 3. Start the server:
    ```
-   node start-server.js
+   node start-server.cjs
    ```
 
 ## Deploying to Render
@@ -26,7 +26,7 @@ To build and run the application locally:
 
 2. Create a new Web Service with the following settings:
    - Build Command: `npm run build`
-   - Start Command: `node start-server.js`
+   - Start Command: `node start-server.cjs`
 
 3. Add the following environment variables:
    - `PORT`: (Leave blank, Render will provide this automatically)
