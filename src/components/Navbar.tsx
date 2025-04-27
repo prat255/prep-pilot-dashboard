@@ -31,7 +31,7 @@ const Navbar = () => {
           <div className="h-8 w-8 rounded-full bg-gradient-to-r from-jee-primary to-jee-secondary flex items-center justify-center text-white font-bold">
             J+
           </div>
-          <span className="text-xl font-bold jee-gradient-text">JEETracker+</span>
+          <span className="text-xl font-bold jee-gradient-text">JEEPilot</span>
         </Link>
         
         {/* Desktop Navigation */}
