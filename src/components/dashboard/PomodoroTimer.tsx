@@ -239,30 +239,30 @@ const PomodoroTimer = () => {
         <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
           {cycles > 0 ? `Cycles completed: ${cycles}` : 'Start your first focus session!'}
         </div>
+        
+        {/* Fullscreen styles */}
+        {isFullscreen && (
+          <style jsx global>{`
+            .fullscreen-card {
+              background: var(--background);
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100vw;
+              height: 100vh;
+              z-index: 9999;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              border-radius: 0;
+              border: none;
+              transition: all 0.3s ease-in-out;
+            }
+          `}</style>
+        )}
       </CardContent>
-      
-      {/* Fullscreen styles */}
-      {isFullscreen && (
-        <style jsx global>{`
-          .fullscreen-card {
-            background: var(--background);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0;
-            border: none;
-            transition: all 0.3s ease-in-out;
-          }
-        `}</style>
-      )}
-    </CardContent>
+    </Card>
   );
 };
 
