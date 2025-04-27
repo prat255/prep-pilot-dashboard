@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: parseInt(process.env.PORT || "8080", 10),
+    port: 8080,
   },
   plugins: [
     react(),
@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
             return 'vendor-react';
           }
           
-          // Group all Radix UI packages properly
+          // Group all Radix UI packages properly - fixed to avoid the @radix-ui resolution error
           if (id.includes('node_modules/@radix-ui/')) {
             return 'vendor-radix';
           }

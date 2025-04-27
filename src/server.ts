@@ -1,8 +1,8 @@
 
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import fs from 'fs';
 import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { resolve } from 'path';
 
 const PORT = process.env.PORT || 8080;
 const distPath = resolve(__dirname, '../dist');
