@@ -22,7 +22,7 @@ const Home = () => {
     {
       icon: <Calendar className="w-6 h-6 text-jee-primary" />,
       title: 'Revision Logger',
-      description: 'Keep track of topics you've revised, review cycles, and comprehension levels.'
+      description: "Keep track of topics you've revised, review cycles, and comprehension levels."
     },
     {
       icon: <Clock className="w-6 h-6 text-jee-primary" />,
@@ -66,11 +66,11 @@ const Home = () => {
 
   // Motivational quotes for JEE preparation
   const quotes = [
-    ""Success is the sum of small efforts, repeated day in and day out." — Robert Collier",
-    ""The difference between ordinary and extraordinary is that little extra." — Jimmy Johnson",
-    ""Don't watch the clock; do what it does. Keep going." — Sam Levenson",
-    ""The only way to do great work is to love what you do." — Steve Jobs",
-    ""Believe you can and you're halfway there." — Theodore Roosevelt"
+    "\"Success is the sum of small efforts, repeated day in and day out.\" — Robert Collier",
+    "\"The difference between ordinary and extraordinary is that little extra.\" — Jimmy Johnson",
+    "\"Don't watch the clock; do what it does. Keep going.\" — Sam Levenson",
+    "\"The only way to do great work is to love what you do.\" — Steve Jobs",
+    "\"Believe you can and you're halfway there.\" — Theodore Roosevelt"
   ];
 
   return (
