@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email: foundUser.email,
             name: foundUser.name || `${foundUser.firstName} ${foundUser.lastName}`,
             isAuthenticated: true,
-            role: foundUser.role || 'user'
+            role: (foundUser.role === 'admin' ? 'admin' : 'user') as 'admin' | 'user'
           };
           
           setUser(userInfo);
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           email: 'google.user@example.com',
           name: 'Google User',
           isAuthenticated: true,
-          role: 'user'
+          role: 'user' as const // Explicit type assertion to 'user'
         };
         
         // Check if user already exists
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             name: googleUser.name,
             password: Math.random().toString(36).slice(-8), // Random password
             createdAt: new Date().toISOString(),
-            role: 'user'
+            role: 'user' as const
           };
           
           users.push(newUser);
